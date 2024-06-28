@@ -1,0 +1,253 @@
+Linux 网络命令行工具入门指南
+目录
+注意事项
+1.1. 截止日期：2023-12-24（周日）
+工具介绍：tmux, nc, ip, tcpdump, ss, nmap, curl
+2.1. 任务说明
+套接字编程
+3.1. TCP
+3.1.1. 用 Python3 编写的简单 TCP 服务器
+3.1.2. 用 Python3 编写的简单 TCP 客户端
+3.1.3. 简单的 TCP 演示脚本
+3.2. UDP
+3.2.1. 用 Python3 编写的简单 UDP 服务器
+3.2.2. 用 Python3 编写的简单 UDP 客户端
+3.2.3. 简单的 UDP 演示脚本
+1. 注意事项
+您必须提交一个包含以下文件的 tar 包：
+
+以 Emacs Org 或 Markdown 格式撰写的报告，以及从 org 或 md 文件生成的 HTML 文件。
+提示：
+在 Emacs 中，按 C-c C-e h h 可以从 org 文件导出 HTML 文件。
+对于 Markdown 到 HTML 的转换，您可以使用 markdown、pandoc、cmark 等工具。
+本页面也是由一个 org 文件（proj-week.org）生成的，您可以将其作为示例。
+报告模板：org 文件、html 文件、markdown 文件。
+您的源码文件（示例）。
+一个用 ttyrec 格式录制的操作演示文件（参见 man ttyrec）。
+以下是具体步骤：
+
+创建一个目录，例如 20221152xxx，在该目录中尽力使所有文件可用。
+
+bash
+复制代码
+mkdir 20221152xxx
+cd 20221152xxx
+emacsclient tmux-http.sh  # 编写脚本
+emacsclient tcpServer.c   # 实现 TCP 服务器
+emacsclient tcpClient.c   # 实现 TCP 客户端
+emacsclient 20221152xxx.org  # 报告（org 格式）
+vim 20221152xxx.md  # 报告（markdown 格式）
+ttyrec http-demo.ttyrec  # 录制演示
+创建 tar 包：
+
+bash
+复制代码
+cd ..
+tar zcf 20221152xxx.tgz 20221152xxx
+ls -l  # 确认 tar 包大小小于 1MB
+将 tar 包提交到 Moodle 站点。
+
+以下是如何查看教程的步骤：
+
+bash
+复制代码
+ttyplay tutorial.ttyrec
+在进行实验工作时，随时可以创建自己的 ttyrec 文件。例如：
+
+bash
+复制代码
+ttyrec 20221152xxx-http.ttyrec
+ttyrec 20221152xxx-email.ttyrec
+ttyrec 20221152xxx-ftp.ttyrec
+加分项：
+使用 git 管理项目。参见 man gittutorial 学习基础知识。
+
+1.1. 截止日期：2023-12-24（周日）
+您需要提交一个 tgz 文件，包含：
+
+以 org 或 markdown 格式撰写的报告。
+HTML 格式的报告。
+用于演示 HTTP 会话的 bash 脚本。
+一个或多个 ttyrec 文件，展示您的操作。
+逾期报告每晚一天扣 20%。不接受 MS-word 文件。作弊将导致本次工作自动失败。
+
+2. 工具介绍：tmux, nc, ip, tcpdump, ss, nmap, curl
+以下是我在课堂上用来演示某些协议的 bash 脚本：
+
+TCP 三次握手
+UDP
+SMTP（需要 SMTP 服务器）
+FTP（需要 FTP 服务器）
+2.1. 任务说明
+运行上述脚本，熟悉这些工具，并深入理解这些协议；
+
+数据包分析。运行以下命令：
+
+bash
+复制代码
+sudo tcpdump -ilo -nnvvvxXKS -s0 port 3333
+捕获的数据包如下：
+
+yaml
+复制代码
+08:34:10.790666 IP (tos 0x0, ttl 64, id 12824, offset 0, flags [DF],
+proto TCP (6), length 64)
+127.0.0.1.46668 > 127.0.0.1.3333: Flags [P.], seq 2400005725:2400005737,
+ack 373279396, win 512, options [nop,nop,TS val 3259949783 ecr 3259896343],
+length 12
+    0x0000:  4500 0040 3218 4000 4006 0a9e 7f00 0001  E..@2.@.@.......
+    0x0010:  7f00 0001 b64c 0d05 8f0d 2e5d 163f caa4  .....L.....].?..
+    0x0020:  8018 0200 fe34 0000 0101 080a c24e e2d7  .....4.......N..
+    0x0030:  c24e 1217 6865 6c6c 6f20 776f 726c 640a  .N..hello.world.
+解释上述命令中每个选项的含义。
+
+分析捕获的数据包，并尽可能详细地解释它。
+
+编写一个类似的脚本，展示 HTTP 的工作原理（需要 curl）。
+
+用 ttyrec 录制您的 HTTP 演示会话。
+
+3. 套接字编程
+以下是我在课堂上用来演示套接字编程的 Python 程序。您的任务是：
+
+使用远程服务器 IP 替代 127.0.0.1 进行尝试。
+用 C 语言重写这些程序。
+3.1. TCP
+3.1.1. 用 Python3 编写的简单 TCP 服务器
+python
+复制代码
+#!/usr/bin/python3
+
+### A simple TCP server ###
+
+from socket import *
+serverPort = 12000
+serverSocket = socket(AF_INET, SOCK_STREAM)
+serverSocket.bind(('',serverPort))
+serverSocket.listen(0)
+print(serverSocket.getsockname())
+print('The server is ready to receive')
+while 1:
+    connectionSocket, addr = serverSocket.accept()
+    print(connectionSocket.getsockname())
+    sentence = connectionSocket.recv(1024)
+    capitalizedSentence = sentence.upper()
+    connectionSocket.send(capitalizedSentence)
+    connectionSocket.close()
+3.1.2. 用 Python3 编写的简单 TCP 客户端
+python
+复制代码
+#!/usr/bin/python3
+
+### A simple TCP client ###
+
+from time import *
+from socket import *
+serverName = '127.0.0.1'
+serverPort = 12000
+clientSocket = socket(AF_INET, SOCK_STREAM)
+clientSocket.connect((serverName,serverPort))
+print(clientSocket.getsockname())
+sentence = input('Input lowercase sentence:')
+clientSocket.send(bytes(sentence,'utf-8'))
+modifiedSentence = clientSocket.recv(1024)
+print('From Server:', str(modifiedSentence,'utf-8'))
+clientSocket.close()
+3.1.3. 简单的 TCP 演示脚本
+bash
+复制代码
+#!/bin/bash
+
+### A simple TCP demo script ###
+
+set -euC
+
+tmux rename-window "TCP demo"
+
+#    Window setup
+# +--------+--------+
+# | server | client |
+# +--------+--------+
+# |      watch      |
+# +-----------------+
+# |     tcpdump     |
+# +-----------------+
+#
+tmux split-window -h
+tmux split-window -fl99
+tmux split-window -l12
+
+tmux send-keys -t{top-left} "./tcpServer.py"
+
+tmux send-keys -t{top-right} "./tcpClient.py"
+
+tmux send-keys -t{up-of} "watch -tn.1 'ss -ant \"( sport == 12000 or dport == 12000 )\"'" C-m
+
+tmux send-keys "sudo tcpdump -ilo -vvvnnxXSK -s0 port 12000" C-m
+3.2. UDP
+3.2.1. 用 Python3 编写的简单 UDP 服务器
+python
+复制代码
+#!/usr/bin/python3
+
+### A simple UDP server ###
+
+from socket import *
+serverPort = 12000
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+serverSocket.bind(('', serverPort))
+print("The server is ready to receive")
+while 1:
+    message, clientAddress = serverSocket.recvfrom(2048)
+    modifiedMessage = message.upper()
+    serverSocket.sendto(modifiedMessage, clientAddress)
+3.2.2. 用 Python3 编写的简单 UDP 客户端
+python
+复制代码
+#!/usr/bin/python3
+
+### A simple UDP client ###
+
+from socket import *
+serverName = '127.0.0.1'
+serverPort = 12000
+clientSocket = socket(AF_INET, SOCK_DGRAM)
+message = input('Input lowercase sentence:')
+clientSocket.sendto(bytes(message,'utf-8'),(serverName, serverPort))
+modifiedMessage, serverAddress = clientSocket.recvfrom(2048)
+print(str(modifiedMessage,'utf-8'))
+clientSocket.close()
+3.2.3. 简单的 UDP 演示脚本
+bash
+复制代码
+#!/bin/bash
+
+### A simple UDP demo script ###
+
+set -euC
+
+tmux rename-window "UDP demo"
+
+#    Window setup
+# +--------+--------+
+# | server | client |
+# +--------+--------+
+# |     tcpdump     |
+# +-----------------+
+#
+tmux split-window -h
+tmux split-window -fl99
+
+tmux send-keys -t{top-left}  "./udpServer.py"
+tmux send-keys -t{top-right} "./udpClient.py"
+
+tmux send-keys "sudo tcpdump -ilo -vvvnnxXK port 12000" C-m
+作者：Xiaolin Wang
+
+创建日期：2023-12-19（周二）09:21
+
+
+
+
+
+
