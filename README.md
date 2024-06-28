@@ -1,6 +1,6 @@
 ---
 title: Hacking with Linux networking CLI tools
-author: Bob (20231159008杨建赋)
+author: Bob (学号)
 date: 2024-06-28
 CJKmainfont: Noto Serif CJK SC
 CJKsansfont: Noto Sans CJK SC
