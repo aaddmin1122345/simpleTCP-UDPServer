@@ -1,14 +1,10 @@
----
-title: Hacking with Linux networking CLI tools
-author: 杨建赋 (20231159008)
-date: 2024-06-28
-CJKmainfont: Noto Serif CJK SC
-CJKsansfont: Noto Sans CJK SC
-header-includes: |
-  <style>
-    body { min-width: 80% !important; }
-  </style>
----
+# title: Hacking with Linux networking CLI tools
+
+## author: 杨建赋 (20231159008)
+
+## date: 2024-06-28
+
+
 
 # Packet analysis
 
