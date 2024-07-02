@@ -1,6 +1,5 @@
 # title: Hacking with Linux networking CLI tools
 
-## author: 杨建赋 (20231159008)
 
 ## date: 2024-06-28
 
